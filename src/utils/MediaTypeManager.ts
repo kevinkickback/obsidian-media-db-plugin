@@ -1,17 +1,18 @@
-import type { App, TAbstractFile, TFile } from 'obsidian';
-import { TFolder } from 'obsidian';
-import { BoardGameModel } from '../models/BoardGameModel';
-import { BookModel } from '../models/BookModel';
-import { GameModel } from '../models/GameModel';
-import { MangaModel } from '../models/MangaModel';
-import type { MediaTypeModel } from '../models/MediaTypeModel';
-import { MovieModel } from '../models/MovieModel';
-import { MusicReleaseModel } from '../models/MusicReleaseModel';
-import { SeriesModel } from '../models/SeriesModel';
-import { WikiModel } from '../models/WikiModel';
-import type { MediaDbPluginSettings } from '../settings/Settings';
-import { MediaType } from './MediaType';
-import { replaceTags } from './Utils';
+import type { App, TAbstractFile, TFile } from "obsidian";
+import { TFolder } from "obsidian";
+import { AnimeModel } from "../models/AnimeModel";
+import { BoardGameModel } from "../models/BoardGameModel";
+import { BookModel } from "../models/BookModel";
+import { GameModel } from "../models/GameModel";
+import { MangaModel } from "../models/MangaModel";
+import type { MediaTypeModel } from "../models/MediaTypeModel";
+import { MovieModel } from "../models/MovieModel";
+import { MusicReleaseModel } from "../models/MusicReleaseModel";
+import { SeriesModel } from "../models/SeriesModel";
+import { WikiModel } from "../models/WikiModel";
+import type { MediaDbPluginSettings } from "../settings/Settings";
+import { MediaType } from "./MediaType";
+import { replaceTags } from "./Utils";
 
 export const MEDIA_TYPES: MediaType[] = [
 	MediaType.Movie,
@@ -22,6 +23,7 @@ export const MEDIA_TYPES: MediaType[] = [
 	MediaType.MusicRelease,
 	MediaType.BoardGame,
 	MediaType.Book,
+	MediaType.Anime,
 ];
 
 export class MediaTypeManager {
@@ -37,14 +39,42 @@ export class MediaTypeManager {
 
 	updateTemplates(settings: MediaDbPluginSettings): void {
 		this.mediaFileNameTemplateMap = new Map<MediaType, string>();
-		this.mediaFileNameTemplateMap.set(MediaType.Movie, settings.movieFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.Series, settings.seriesFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.Manga, settings.mangaFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.Game, settings.gameFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.Wiki, settings.wikiFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.MusicRelease, settings.musicReleaseFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.BoardGame, settings.boardgameFileNameTemplate);
-		this.mediaFileNameTemplateMap.set(MediaType.Book, settings.bookFileNameTemplate);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Movie,
+			settings.movieFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Series,
+			settings.seriesFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Manga,
+			settings.mangaFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Game,
+			settings.gameFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Wiki,
+			settings.wikiFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.MusicRelease,
+			settings.musicReleaseFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.BoardGame,
+			settings.boardgameFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Book,
+			settings.bookFileNameTemplate,
+		);
+		this.mediaFileNameTemplateMap.set(
+			MediaType.Anime,
+			settings.animeFileNameTemplate,
+		);
 
 		this.mediaTemplateMap = new Map<MediaType, string>();
 		this.mediaTemplateMap.set(MediaType.Movie, settings.movieTemplate);
@@ -52,9 +82,13 @@ export class MediaTypeManager {
 		this.mediaTemplateMap.set(MediaType.Manga, settings.mangaTemplate);
 		this.mediaTemplateMap.set(MediaType.Game, settings.gameTemplate);
 		this.mediaTemplateMap.set(MediaType.Wiki, settings.wikiTemplate);
-		this.mediaTemplateMap.set(MediaType.MusicRelease, settings.musicReleaseTemplate);
+		this.mediaTemplateMap.set(
+			MediaType.MusicRelease,
+			settings.musicReleaseTemplate,
+		);
 		this.mediaTemplateMap.set(MediaType.BoardGame, settings.boardgameTemplate);
 		this.mediaTemplateMap.set(MediaType.Book, settings.bookTemplate);
+		this.mediaTemplateMap.set(MediaType.Anime, settings.animeTemplate);
 	}
 
 	updateFolders(settings: MediaDbPluginSettings): void {
@@ -64,24 +98,35 @@ export class MediaTypeManager {
 		this.mediaFolderMap.set(MediaType.Manga, settings.mangaFolder);
 		this.mediaFolderMap.set(MediaType.Game, settings.gameFolder);
 		this.mediaFolderMap.set(MediaType.Wiki, settings.wikiFolder);
-		this.mediaFolderMap.set(MediaType.MusicRelease, settings.musicReleaseFolder);
+		this.mediaFolderMap.set(
+			MediaType.MusicRelease,
+			settings.musicReleaseFolder,
+		);
 		this.mediaFolderMap.set(MediaType.BoardGame, settings.boardgameFolder);
 		this.mediaFolderMap.set(MediaType.Book, settings.bookFolder);
+		this.mediaFolderMap.set(MediaType.Anime, settings.animeFolder);
 	}
 
 	getFileName(mediaTypeModel: MediaTypeModel): string {
 		// Ignore undefined tags since some search APIs do not return all properties in the model and produce clean file names even if errors occur
-		return replaceTags(this.mediaFileNameTemplateMap.get(mediaTypeModel.getMediaType())!, mediaTypeModel, true);
+		return replaceTags(
+			this.mediaFileNameTemplateMap.get(mediaTypeModel.getMediaType())!,
+			mediaTypeModel,
+			true,
+		);
 	}
 
 	async getTemplate(mediaTypeModel: MediaTypeModel, app: App): Promise<string> {
-		const templateFilePath = this.mediaTemplateMap.get(mediaTypeModel.getMediaType());
+		const templateFilePath = this.mediaTemplateMap.get(
+			mediaTypeModel.getMediaType(),
+		);
 
 		if (!templateFilePath) {
-			return '';
+			return "";
 		}
 
-		let templateFile = app.vault.getAbstractFileByPath(templateFilePath) ?? undefined;
+		let templateFile =
+			app.vault.getAbstractFileByPath(templateFilePath) ?? undefined;
 
 		// WARNING: This was previously selected by filename, but that could lead to collisions and unwanted effects.
 		// This now falls back to the previous method if no file is found
@@ -92,7 +137,7 @@ export class MediaTypeManager {
 				.first();
 
 			if (!templateFile) {
-				return '';
+				return "";
 			}
 		}
 
@@ -127,23 +172,36 @@ export class MediaTypeManager {
 	 * @param obj
 	 * @param mediaType
 	 */
-	createMediaTypeModelFromMediaType(obj: any, mediaType: MediaType): MediaTypeModel {
+	createMediaTypeModelFromMediaType(
+		obj: any,
+		mediaType: MediaType,
+	): MediaTypeModel {
 		if (mediaType === MediaType.Movie) {
 			return new MovieModel(obj);
-		} else if (mediaType === MediaType.Series) {
+		}
+		if (mediaType === MediaType.Series) {
 			return new SeriesModel(obj);
-		} else if (mediaType === MediaType.Manga) {
+		}
+		if (mediaType === MediaType.Manga) {
 			return new MangaModel(obj);
-		} else if (mediaType === MediaType.Game) {
+		}
+		if (mediaType === MediaType.Game) {
 			return new GameModel(obj);
-		} else if (mediaType === MediaType.Wiki) {
+		}
+		if (mediaType === MediaType.Wiki) {
 			return new WikiModel(obj);
-		} else if (mediaType === MediaType.MusicRelease) {
+		}
+		if (mediaType === MediaType.MusicRelease) {
 			return new MusicReleaseModel(obj);
-		} else if (mediaType === MediaType.BoardGame) {
+		}
+		if (mediaType === MediaType.BoardGame) {
 			return new BoardGameModel(obj);
-		} else if (mediaType === MediaType.Book) {
+		}
+		if (mediaType === MediaType.Book) {
 			return new BookModel(obj);
+		}
+		if (mediaType === MediaType.Anime) {
+			return new AnimeModel(obj);
 		}
 
 		throw new Error(`Unknown media type: ${mediaType}`);

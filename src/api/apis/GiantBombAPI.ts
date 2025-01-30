@@ -1,21 +1,21 @@
-import { requestUrl } from 'obsidian';
-import type MediaDbPlugin from '../../main';
-import { GameModel } from '../../models/GameModel';
-import type { MediaTypeModel } from '../../models/MediaTypeModel';
-import { MediaType } from '../../utils/MediaType';
-import { APIModel } from '../APIModel';
+import { requestUrl } from "obsidian";
+import type MediaDbPlugin from "../../main";
+import { GameModel } from "../../models/GameModel";
+import type { MediaTypeModel } from "../../models/MediaTypeModel";
+import { MediaType } from "../../utils/MediaType";
+import { APIModel } from "../APIModel";
 
 export class GiantBombAPI extends APIModel {
 	plugin: MediaDbPlugin;
-	apiDateFormat: string = 'YYYY-MM-DD';
+	apiDateFormat: string = "YYYY-MM-DD";
 
 	constructor(plugin: MediaDbPlugin) {
 		super();
 
 		this.plugin = plugin;
-		this.apiName = 'GiantBombAPI';
-		this.apiDescription = 'A free API for games.';
-		this.apiUrl = 'https://www.giantbomb.com/api';
+		this.apiName = "GiantBombAPI";
+		this.apiDescription = "A free API for games.";
+		this.apiUrl = "https://www.giantbomb.com/api";
 		this.types = [MediaType.Game];
 	}
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
@@ -33,13 +33,19 @@ export class GiantBombAPI extends APIModel {
 		// console.debug(fetchData);
 
 		if (fetchData.status === 401) {
-			throw Error(`MDB | Authentication for ${this.apiName} failed. Check the API key.`);
+			throw Error(
+				`MDB | Authentication for ${this.apiName} failed. Check the API key.`,
+			);
 		}
 		if (fetchData.status === 429) {
-			throw Error(`MDB | Too many requests for ${this.apiName}, you've exceeded your API quota.`);
+			throw Error(
+				`MDB | Too many requests for ${this.apiName}, you've exceeded your API quota.`,
+			);
 		}
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
 		const data = await fetchData.json;
@@ -75,7 +81,9 @@ export class GiantBombAPI extends APIModel {
 		console.debug(fetchData);
 
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
 		const data = await fetchData.json;
@@ -94,14 +102,15 @@ export class GiantBombAPI extends APIModel {
 			publishers: result.publishers?.map((x: any) => x.name) ?? [],
 			genres: result.genres?.map((x: any) => x.name) ?? [],
 			onlineRating: 0,
-			image: result.image?.super_url ?? '',
+			image: result.image?.super_url ?? "",
+			plot: result.deck ?? "",
+			series: result.franchises?.map((x: any) => x.name) ?? [],
 
 			released: true,
-			releaseDate: result.original_release_date ?? 'unknown',
+			releaseDate: result.original_release_date ?? "unknown",
 
 			userData: {
 				played: false,
-
 				personalRating: 0,
 			},
 		});

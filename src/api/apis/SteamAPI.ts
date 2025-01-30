@@ -1,25 +1,49 @@
-import { requestUrl } from 'obsidian';
-import type MediaDbPlugin from '../../main';
-import { GameModel } from '../../models/GameModel';
-import type { MediaTypeModel } from '../../models/MediaTypeModel';
-import { MediaType } from '../../utils/MediaType';
-import { APIModel } from '../APIModel';
+import { requestUrl } from "obsidian";
+import type MediaDbPlugin from "../../main";
+import { GameModel } from "../../models/GameModel";
+import type { MediaTypeModel } from "../../models/MediaTypeModel";
+import { MediaType } from "../../utils/MediaType";
+import { APIModel } from "../APIModel";
+
+interface SteamSearchResult {
+	name: string;
+	appid: string;
+}
+
+interface SteamGenre {
+	description: string;
+}
+
+interface SteamGameDetails {
+	name: string;
+	steam_appid: string;
+	detailed_description: string;
+	short_description: string;
+	header_image: string;
+	developers: string[];
+	publishers: string[];
+	genres: SteamGenre[];
+	metacritic?: { score: string };
+	release_date: {
+		date: string;
+		comming_soon: boolean;
+	};
+}
 
 export class SteamAPI extends APIModel {
 	plugin: MediaDbPlugin;
-	typeMappings: Map<string, string>;
-	apiDateFormat: string = 'DD MMM, YYYY';
+	typeMappings = new Map<string, string>();
+	apiDateFormat = "DD MMM, YYYY";
 
 	constructor(plugin: MediaDbPlugin) {
 		super();
 
 		this.plugin = plugin;
-		this.apiName = 'SteamAPI';
-		this.apiDescription = 'A free API for all Steam games.';
-		this.apiUrl = 'https://www.steampowered.com/';
+		this.apiName = "SteamAPI";
+		this.apiDescription = "A free API for all Steam games.";
+		this.apiUrl = "https://www.steampowered.com/";
 		this.types = [MediaType.Game];
-		this.typeMappings = new Map<string, string>();
-		this.typeMappings.set('game', 'game');
+		this.typeMappings.set("game", "game");
 	}
 
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
@@ -31,22 +55,21 @@ export class SteamAPI extends APIModel {
 		});
 
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
 		const data = await fetchData.json;
-
-		// console.debug(data);
-
 		const ret: MediaTypeModel[] = [];
 
-		for (const result of data) {
+		for (const result of data as SteamSearchResult[]) {
 			ret.push(
 				new GameModel({
 					type: MediaType.Game,
 					title: result.name,
 					englishTitle: result.name,
-					year: '',
+					year: "",
 					dataSource: this.apiName,
 					id: result.appid,
 				}),
@@ -65,25 +88,23 @@ export class SteamAPI extends APIModel {
 		});
 
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
-		// console.debug(await fetchData.json);
+		const data = await fetchData.json;
+		let result: SteamGameDetails | undefined;
 
-		let result: any;
-		for (const [key, value] of Object.entries(await fetchData.json)) {
-			// console.log(typeof key, key)
-			// console.log(typeof id, id)
-			// after some testing I found out that id is somehow a number despite that it's defined as string...
+		for (const [key, value] of Object.entries(data)) {
 			if (key === String(id)) {
-				result = (value as any).data;
+				result = (value as { data: SteamGameDetails }).data;
 			}
 		}
-		if (!result) {
-			throw Error(`MDB | API returned invalid data.`);
-		}
 
-		// console.debug(result);
+		if (!result) {
+			throw Error("MDB | API returned invalid data.");
+		}
 
 		return new GameModel({
 			type: MediaType.Game,
@@ -96,12 +117,18 @@ export class SteamAPI extends APIModel {
 
 			developers: result.developers,
 			publishers: result.publishers,
-			genres: result.genres?.map((x: any) => x.description) ?? [],
-			onlineRating: Number.parseFloat(result.metacritic?.score ?? 0),
-			image: result.header_image ?? '',
+			genres: result.genres?.map((x) => x.description) ?? [],
+			onlineRating: Number.parseFloat(result.metacritic?.score ?? "0"),
+			image: result.header_image ?? "",
+			plot: result.short_description ?? "",
+			series: [],
 
-			released: !result.release_date?.comming_soon,
-			releaseDate: this.plugin.dateFormatter.format(result.release_date?.date, this.apiDateFormat) ?? 'unknown',
+			released: !result.release_date.comming_soon,
+			releaseDate:
+				this.plugin.dateFormatter.format(
+					result.release_date.date,
+					this.apiDateFormat,
+				) ?? "unknown",
 
 			userData: {
 				played: false,

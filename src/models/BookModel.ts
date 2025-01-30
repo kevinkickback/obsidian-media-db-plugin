@@ -1,7 +1,7 @@
-import { MediaType } from '../utils/MediaType';
-import type { ModelToData } from '../utils/Utils';
-import { mediaDbTag, migrateObject } from '../utils/Utils';
-import { MediaTypeModel } from './MediaTypeModel';
+import { MediaType } from "../utils/MediaType";
+import type { ModelToData } from "../utils/Utils";
+import { mediaDbTag, migrateObject } from "../utils/Utils";
+import { MediaTypeModel } from "./MediaTypeModel";
 
 export type BookData = ModelToData<BookModel>;
 
@@ -11,8 +11,11 @@ export class BookModel extends MediaTypeModel {
 	pages: number;
 	image: string;
 	onlineRating: number;
-	isbn: number;
-	isbn13: number;
+	isbn: string;
+	isbn13: string;
+	genres: string[];
+	publishers: string[];
+	series: string[];
 
 	released: boolean;
 
@@ -25,25 +28,28 @@ export class BookModel extends MediaTypeModel {
 	constructor(obj: BookData) {
 		super();
 
-		this.author = '';
-		this.plot = '';
+		this.author = "";
+		this.plot = "";
 		this.pages = 0;
-		this.image = '';
+		this.image = "";
 		this.onlineRating = 0;
-		this.isbn = 0;
-		this.isbn13 = 0;
+		this.isbn = "";
+		this.isbn13 = "";
+		this.genres = [];
+		this.publishers = [];
+		this.series = [];
 
 		this.released = false;
 
 		this.userData = {
 			read: false,
-			lastRead: '',
+			lastRead: "",
 			personalRating: 0,
 		};
 
 		migrateObject(this, obj, this);
 
-		if (!obj.hasOwnProperty('userData')) {
+		if (!Object.prototype.hasOwnProperty.call(obj, "userData")) {
 			migrateObject(this.userData, obj, this.userData);
 		}
 
@@ -51,7 +57,7 @@ export class BookModel extends MediaTypeModel {
 	}
 
 	getTags(): string[] {
-		return [mediaDbTag, 'book'];
+		return [mediaDbTag, "book"];
 	}
 
 	getMediaType(): MediaType {
@@ -59,6 +65,6 @@ export class BookModel extends MediaTypeModel {
 	}
 
 	getSummary(): string {
-		return this.englishTitle + ' (' + this.year + ') - ' + this.author;
+		return `${this.englishTitle} (${this.year}) - ${this.author}`;
 	}
 }

@@ -1,29 +1,29 @@
-import { Notice } from 'obsidian';
-import type MediaDbPlugin from '../../main';
-import { GameModel } from '../../models/GameModel';
-import type { MediaTypeModel } from '../../models/MediaTypeModel';
-import { MovieModel } from '../../models/MovieModel';
-import { SeriesModel } from '../../models/SeriesModel';
-import { MediaType } from '../../utils/MediaType';
-import { APIModel } from '../APIModel';
+import { Notice } from "obsidian";
+import type MediaDbPlugin from "../../main";
+import { GameModel } from "../../models/GameModel";
+import type { MediaTypeModel } from "../../models/MediaTypeModel";
+import { MovieModel } from "../../models/MovieModel";
+import { SeriesModel } from "../../models/SeriesModel";
+import { MediaType } from "../../utils/MediaType";
+import { APIModel } from "../APIModel";
 
 export class OMDbAPI extends APIModel {
 	plugin: MediaDbPlugin;
 	typeMappings: Map<string, string>;
-	apiDateFormat: string = 'DD MMM YYYY';
+	apiDateFormat: string = "DD MMM YYYY";
 
 	constructor(plugin: MediaDbPlugin) {
 		super();
 
 		this.plugin = plugin;
-		this.apiName = 'OMDbAPI';
-		this.apiDescription = 'A free API for Movies, Series and Games.';
-		this.apiUrl = 'https://www.omdbapi.com/';
+		this.apiName = "OMDbAPI";
+		this.apiDescription = "A free API for Movies, Series and Games.";
+		this.apiUrl = "https://www.omdbapi.com/";
 		this.types = [MediaType.Movie, MediaType.Series, MediaType.Game];
 		this.typeMappings = new Map<string, string>();
-		this.typeMappings.set('movie', 'movie');
-		this.typeMappings.set('series', 'series');
-		this.typeMappings.set('game', 'game');
+		this.typeMappings.set("movie", "movie");
+		this.typeMappings.set("series", "series");
+		this.typeMappings.set("game", "game");
 	}
 
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
@@ -37,20 +37,26 @@ export class OMDbAPI extends APIModel {
 		const fetchData = await fetch(searchUrl);
 
 		if (fetchData.status === 401) {
-			throw Error(`MDB | Authentication for ${this.apiName} failed. Check the API key.`);
+			throw Error(
+				`MDB | Authentication for ${this.apiName} failed. Check the API key.`,
+			);
 		}
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
 		const data = await fetchData.json();
 
-		if (data.Response === 'False') {
-			if (data.Error === 'Movie not found!') {
+		if (data.Response === "False") {
+			if (data.Error === "Movie not found!") {
 				return [];
 			}
 
-			throw Error(`MDB | Received error from ${this.apiName}: \n${JSON.stringify(data, undefined, 4)}`);
+			throw Error(
+				`MDB | Received error from ${this.apiName}: \n${JSON.stringify(data, undefined, 4)}`,
+			);
 		}
 		if (!data.Search) {
 			return [];
@@ -65,7 +71,7 @@ export class OMDbAPI extends APIModel {
 			if (type === undefined) {
 				continue;
 			}
-			if (type === 'movie') {
+			if (type === "movie") {
 				ret.push(
 					new MovieModel({
 						type: type,
@@ -76,7 +82,7 @@ export class OMDbAPI extends APIModel {
 						id: result.imdbID,
 					}),
 				);
-			} else if (type === 'series') {
+			} else if (type === "series") {
 				ret.push(
 					new SeriesModel({
 						type: type,
@@ -87,7 +93,7 @@ export class OMDbAPI extends APIModel {
 						id: result.imdbID,
 					}),
 				);
-			} else if (type === 'game') {
+			} else if (type === "game") {
 				ret.push(
 					new GameModel({
 						type: type,
@@ -115,16 +121,20 @@ export class OMDbAPI extends APIModel {
 		const fetchData = await fetch(searchUrl);
 
 		if (fetchData.status === 401) {
-			throw Error(`MDB | Authentication for ${this.apiName} failed. Check the API key.`);
+			throw Error(
+				`MDB | Authentication for ${this.apiName} failed. Check the API key.`,
+			);
 		}
 		if (fetchData.status !== 200) {
-			throw Error(`MDB | Received status code ${fetchData.status} from ${this.apiName}.`);
+			throw Error(
+				`MDB | Received status code ${fetchData.status} from ${this.apiName}.`,
+			);
 		}
 
 		const result = await fetchData.json();
 		// console.debug(result);
 
-		if (result.Response === 'False') {
+		if (result.Response === "False") {
 			throw Error(`MDB | Received error from ${this.apiName}: ${result.Error}`);
 		}
 
@@ -133,7 +143,7 @@ export class OMDbAPI extends APIModel {
 			throw Error(`${result.type.toLowerCase()} is an unsupported type.`);
 		}
 
-		if (type === 'movie') {
+		if (type === "movie") {
 			return new MovieModel({
 				type: type,
 				title: result.Title,
@@ -143,27 +153,31 @@ export class OMDbAPI extends APIModel {
 				url: `https://www.imdb.com/title/${result.imdbID}/`,
 				id: result.imdbID,
 
-				plot: result.Plot ?? '',
-				genres: result.Genre?.split(', ') ?? [],
-				director: result.Director?.split(', ') ?? [],
-				writer: result.Writer?.split(', ') ?? [],
-				studio: ['N/A'],
-				duration: result.Runtime ?? 'unknown',
+				plot: result.Plot ?? "",
+				genres: result.Genre?.split(", ") ?? [],
+				director: result.Director?.split(", ") ?? [],
+				writer: result.Writer?.split(", ") ?? [],
+				studio: ["N/A"],
+				duration: result.Runtime ?? "unknown",
 				onlineRating: Number.parseFloat(result.imdbRating ?? 0),
-				actors: result.Actors?.split(', ') ?? [],
-				image: result.Poster ?? '',
+				actors: result.Actors?.split(", ") ?? [],
+				image: result.Poster ?? "",
 
 				released: true,
 				streamingServices: [],
-				premiere: this.plugin.dateFormatter.format(result.Released, this.apiDateFormat) ?? 'unknown',
+				premiere:
+					this.plugin.dateFormatter.format(
+						result.Released,
+						this.apiDateFormat,
+					) ?? "unknown",
 
 				userData: {
 					watched: false,
-					lastWatched: '',
+					lastWatched: "",
 					personalRating: 0,
 				},
 			});
-		} else if (type === 'series') {
+		} else if (type === "series") {
 			return new SeriesModel({
 				type: type,
 				title: result.Title,
@@ -173,29 +187,34 @@ export class OMDbAPI extends APIModel {
 				url: `https://www.imdb.com/title/${result.imdbID}/`,
 				id: result.imdbID,
 
-				plot: result.Plot ?? '',
-				genres: result.Genre?.split(', ') ?? [],
-				writer: result.Writer?.split(', ') ?? [],
+				plot: result.Plot ?? "",
+				genres: result.Genre?.split(", ") ?? [],
+				writer: result.Writer?.split(", ") ?? [],
 				studio: [],
 				episodes: 0,
-				duration: result.Runtime ?? 'unknown',
+				seasons: Number.parseInt(result.totalSeasons ?? "0"),
+				duration: result.Runtime ?? "unknown",
 				onlineRating: Number.parseFloat(result.imdbRating ?? 0),
-				actors: result.Actors?.split(', ') ?? [],
-				image: result.Poster ?? '',
+				actors: result.Actors?.split(", ") ?? [],
+				image: result.Poster ?? "",
 
 				released: true,
 				streamingServices: [],
 				airing: false,
-				airedFrom: this.plugin.dateFormatter.format(result.Released, this.apiDateFormat) ?? 'unknown',
-				airedTo: 'unknown',
+				airedFrom:
+					this.plugin.dateFormatter.format(
+						result.Released,
+						this.apiDateFormat,
+					) ?? "unknown",
+				airedTo: "unknown",
 
 				userData: {
 					watched: false,
-					lastWatched: '',
+					lastWatched: "",
 					personalRating: 0,
 				},
 			});
-		} else if (type === 'game') {
+		} else if (type === "game") {
 			return new GameModel({
 				type: type,
 				title: result.Title,
@@ -207,12 +226,16 @@ export class OMDbAPI extends APIModel {
 
 				developers: [],
 				publishers: [],
-				genres: result.Genre?.split(', ') ?? [],
+				genres: result.Genre?.split(", ") ?? [],
 				onlineRating: Number.parseFloat(result.imdbRating ?? 0),
-				image: result.Poster ?? '',
+				image: result.Poster ?? "",
 
 				released: true,
-				releaseDate: this.plugin.dateFormatter.format(result.Released, this.apiDateFormat) ?? 'unknown',
+				releaseDate:
+					this.plugin.dateFormatter.format(
+						result.Released,
+						this.apiDateFormat,
+					) ?? "unknown",
 
 				userData: {
 					played: false,

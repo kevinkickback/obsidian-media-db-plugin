@@ -1,7 +1,7 @@
-import { MediaType } from '../utils/MediaType';
-import type { ModelToData } from '../utils/Utils';
-import { mediaDbTag, migrateObject } from '../utils/Utils';
-import { MediaTypeModel } from './MediaTypeModel';
+import { MediaType } from "../utils/MediaType";
+import type { ModelToData } from "../utils/Utils";
+import { mediaDbTag, migrateObject } from "../utils/Utils";
+import { MediaTypeModel } from "./MediaTypeModel";
 
 export type GameData = ModelToData<GameModel>;
 
@@ -11,6 +11,8 @@ export class GameModel extends MediaTypeModel {
 	genres: string[];
 	onlineRating: number;
 	image: string;
+	plot: string;
+	series: string[];
 
 	released: boolean;
 	releaseDate: string;
@@ -27,10 +29,12 @@ export class GameModel extends MediaTypeModel {
 		this.publishers = [];
 		this.genres = [];
 		this.onlineRating = 0;
-		this.image = '';
+		this.image = "";
+		this.plot = "";
+		this.series = [];
 
 		this.released = false;
-		this.releaseDate = '';
+		this.releaseDate = "";
 
 		this.userData = {
 			played: false,
@@ -39,7 +43,7 @@ export class GameModel extends MediaTypeModel {
 
 		migrateObject(this, obj, this);
 
-		if (!obj.hasOwnProperty('userData')) {
+		if (!Object.prototype.hasOwnProperty.call(obj, "userData")) {
 			migrateObject(this.userData, obj, this.userData);
 		}
 
@@ -47,7 +51,7 @@ export class GameModel extends MediaTypeModel {
 	}
 
 	getTags(): string[] {
-		return [mediaDbTag, 'game'];
+		return [mediaDbTag, "game"];
 	}
 
 	getMediaType(): MediaType {
@@ -55,6 +59,6 @@ export class GameModel extends MediaTypeModel {
 	}
 
 	getSummary(): string {
-		return this.englishTitle + ' (' + this.year + ')';
+		return `${this.englishTitle} (${this.year})`;
 	}
 }

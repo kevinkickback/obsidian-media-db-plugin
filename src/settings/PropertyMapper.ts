@@ -1,6 +1,6 @@
-import type MediaDbPlugin from '../main';
-import { MEDIA_TYPES } from '../utils/MediaTypeManager';
-import { PropertyMappingOption } from './PropertyMapping';
+import type MediaDbPlugin from "../main";
+import { MEDIA_TYPES } from "../utils/MediaTypeManager";
+import { PropertyMappingOption } from "./PropertyMapping";
 
 export class PropertyMapper {
 	plugin: MediaDbPlugin;
@@ -16,18 +16,20 @@ export class PropertyMapper {
 	 * @param obj
 	 */
 	convertObject(obj: Record<string, unknown>): Record<string, unknown> {
-		if (!obj.hasOwnProperty('type')) {
+		if (!obj.hasOwnProperty("type")) {
 			return obj;
 		}
 
 		// console.log(obj.type);
 
-		if (MEDIA_TYPES.filter(x => x.toString() == obj.type).length < 1) {
+		if (MEDIA_TYPES.filter((x) => x.toString() == obj.type).length < 1) {
 			return obj;
 		}
 
 		// @ts-ignore
-		const propertyMappings = this.plugin.settings.propertyMappingModels.find(x => x.type === obj.type).properties;
+		const propertyMappings = this.plugin.settings.propertyMappingModels.find(
+			(x) => x.type === obj.type,
+		).properties;
 
 		const newObj: Record<string, unknown> = {};
 
@@ -39,7 +41,9 @@ export class PropertyMapper {
 						newObj[propertyMapping.newProperty] = value;
 					} else if (propertyMapping.mapping === PropertyMappingOption.Remove) {
 						// do nothing
-					} else if (propertyMapping.mapping === PropertyMappingOption.Default) {
+					} else if (
+						propertyMapping.mapping === PropertyMappingOption.Default
+					) {
 						// @ts-ignore
 						newObj[key] = value;
 					}
@@ -58,7 +62,7 @@ export class PropertyMapper {
 	 * @param obj
 	 */
 	convertObjectBack(obj: Record<string, unknown>): Record<string, unknown> {
-		if (!obj.hasOwnProperty('type')) {
+		if (!obj.hasOwnProperty("type")) {
 			return obj;
 		}
 
@@ -66,7 +70,10 @@ export class PropertyMapper {
 			return obj;
 		}
 
-		const propertyMappings = this.plugin.settings.propertyMappingModels.find(x => x.type === obj.type)?.properties ?? [];
+		const propertyMappings =
+			this.plugin.settings.propertyMappingModels.find(
+				(x) => x.type === obj.type,
+			)?.properties ?? [];
 
 		const originalObj: Record<string, unknown> = {};
 
