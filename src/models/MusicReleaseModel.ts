@@ -1,7 +1,7 @@
-import { MediaType } from '../utils/MediaType';
-import type { ModelToData } from '../utils/Utils';
-import { mediaDbTag, migrateObject } from '../utils/Utils';
-import { MediaTypeModel } from './MediaTypeModel';
+import { MediaType } from "../utils/MediaType";
+import type { ModelToData } from "../utils/Utils";
+import { mediaDbTag, migrateObject } from "../utils/Utils";
+import { MediaTypeModel } from "./MediaTypeModel";
 
 export type MusicReleaseData = ModelToData<MusicReleaseModel>;
 
@@ -10,6 +10,8 @@ export class MusicReleaseModel extends MediaTypeModel {
 	artists: string[];
 	image: string;
 	rating: number;
+	label: string;
+	duration: string;
 
 	userData: {
 		personalRating: number;
@@ -20,15 +22,17 @@ export class MusicReleaseModel extends MediaTypeModel {
 
 		this.genres = [];
 		this.artists = [];
-		this.image = '';
+		this.image = "";
 		this.rating = 0;
+		this.label = "";
+		this.duration = "";
 		this.userData = {
 			personalRating: 0,
 		};
 
 		migrateObject(this, obj, this);
 
-		if (!obj.hasOwnProperty('userData')) {
+		if (!Object.prototype.hasOwnProperty.call(obj, "userData")) {
 			migrateObject(this.userData, obj, this.userData);
 		}
 
@@ -36,7 +40,7 @@ export class MusicReleaseModel extends MediaTypeModel {
 	}
 
 	getTags(): string[] {
-		return [mediaDbTag, 'music', this.subType];
+		return [mediaDbTag, "music", this.subType];
 	}
 
 	getMediaType(): MediaType {
@@ -44,8 +48,9 @@ export class MusicReleaseModel extends MediaTypeModel {
 	}
 
 	getSummary(): string {
-		let summary = this.title + ' (' + this.year + ')';
-		if (this.artists.length > 0) summary += ' - ' + this.artists.join(', ');
+		let summary = `${this.title} (${this.year})`;
+		if (this.artists.length > 0) summary += ` - ${this.artists.join(", ")}`;
+		if (this.label) summary += ` [${this.label}]`;
 		return summary;
 	}
 }

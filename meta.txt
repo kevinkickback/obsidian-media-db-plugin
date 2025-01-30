@@ -132,7 +132,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/GiantBombAPI.ts": {
-			"bytes": 3506,
+			"bytes": 3578,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -143,6 +143,58 @@
 					"path": "src/models/GameModel.ts",
 					"kind": "import-statement",
 					"original": "../../models/GameModel"
+				},
+				{
+					"path": "src/utils/MediaType.ts",
+					"kind": "import-statement",
+					"original": "../../utils/MediaType"
+				},
+				{
+					"path": "src/api/APIModel.ts",
+					"kind": "import-statement",
+					"original": "../APIModel"
+				},
+				{
+					"path": "<runtime>",
+					"kind": "import-statement",
+					"external": true
+				}
+			],
+			"format": "esm"
+		},
+		"src/models/BookModel.ts": {
+			"bytes": 1467,
+			"imports": [
+				{
+					"path": "src/utils/MediaType.ts",
+					"kind": "import-statement",
+					"original": "../utils/MediaType"
+				},
+				{
+					"path": "src/utils/Utils.ts",
+					"kind": "import-statement",
+					"original": "../utils/Utils"
+				},
+				{
+					"path": "src/models/MediaTypeModel.ts",
+					"kind": "import-statement",
+					"original": "./MediaTypeModel"
+				},
+				{
+					"path": "<runtime>",
+					"kind": "import-statement",
+					"external": true
+				}
+			],
+			"format": "esm"
+		},
+		"src/api/apis/GoogleBooksAPI.ts": {
+			"bytes": 7921,
+			"imports": [
+				{
+					"path": "src/models/BookModel.ts",
+					"kind": "import-statement",
+					"original": "src/models/BookModel"
 				},
 				{
 					"path": "src/utils/MediaType.ts",
@@ -298,7 +350,7 @@
 			"format": "esm"
 		},
 		"src/models/MusicReleaseModel.ts": {
-			"bytes": 1163,
+			"bytes": 1311,
 			"imports": [
 				{
 					"path": "src/utils/MediaType.ts",
@@ -324,7 +376,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/MusicBrainzAPI.ts": {
-			"bytes": 3262,
+			"bytes": 5529,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -412,7 +464,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/OMDbAPI.ts": {
-			"bytes": 6836,
+			"bytes": 6941,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -452,34 +504,8 @@
 			],
 			"format": "esm"
 		},
-		"src/models/BookModel.ts": {
-			"bytes": 1418,
-			"imports": [
-				{
-					"path": "src/utils/MediaType.ts",
-					"kind": "import-statement",
-					"original": "../utils/MediaType"
-				},
-				{
-					"path": "src/utils/Utils.ts",
-					"kind": "import-statement",
-					"original": "../utils/Utils"
-				},
-				{
-					"path": "src/models/MediaTypeModel.ts",
-					"kind": "import-statement",
-					"original": "./MediaTypeModel"
-				},
-				{
-					"path": "<runtime>",
-					"kind": "import-statement",
-					"external": true
-				}
-			],
-			"format": "esm"
-		},
 		"src/api/apis/OpenLibraryAPI.ts": {
-			"bytes": 4380,
+			"bytes": 4841,
 			"imports": [
 				{
 					"path": "src/models/BookModel.ts",
@@ -505,7 +531,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/SteamAPI.ts": {
-			"bytes": 3642,
+			"bytes": 3735,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -4779,7 +4805,7 @@
 			"format": "esm"
 		},
 		"src/modals/MediaDbSearchResultModal.ts": {
-			"bytes": 2262,
+			"bytes": 4865,
 			"imports": [
 				{
 					"path": "src/utils/ModalHelper.ts",
@@ -4841,7 +4867,7 @@
 			"format": "esm"
 		},
 		"src/main.ts": {
-			"bytes": 26143,
+			"bytes": 26260,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -4867,6 +4893,11 @@
 					"path": "src/api/apis/GiantBombAPI.ts",
 					"kind": "import-statement",
 					"original": "./api/apis/GiantBombAPI"
+				},
+				{
+					"path": "src/api/apis/GoogleBooksAPI.ts",
+					"kind": "import-statement",
+					"original": "./api/apis/GoogleBooksAPI"
 				},
 				{
 					"path": "src/api/apis/MALAPI.ts",
@@ -5080,7 +5111,7 @@
 			"entryPoint": "src/main.ts",
 			"inputs": {
 				"src/main.ts": {
-					"bytesInOutput": 11274
+					"bytesInOutput": 11316
 				},
 				"src/api/APIManager.ts": {
 					"bytesInOutput": 745
@@ -5101,10 +5132,16 @@
 					"bytesInOutput": 214
 				},
 				"src/api/apis/GiantBombAPI.ts": {
-					"bytesInOutput": 2290
+					"bytesInOutput": 2410
 				},
 				"src/models/GameModel.ts": {
 					"bytesInOutput": 676
+				},
+				"src/models/BookModel.ts": {
+					"bytesInOutput": 784
+				},
+				"src/api/apis/GoogleBooksAPI.ts": {
+					"bytesInOutput": 3905
 				},
 				"src/models/AnimeModel.ts": {
 					"bytesInOutput": 1095
@@ -5122,13 +5159,13 @@
 					"bytesInOutput": 50
 				},
 				"src/api/apis/MusicBrainzAPI.ts": {
-					"bytesInOutput": 1853
+					"bytesInOutput": 2600
 				},
 				"src/models/MusicReleaseModel.ts": {
-					"bytesInOutput": 529
+					"bytesInOutput": 656
 				},
 				"src/api/apis/OMDbAPI.ts": {
-					"bytesInOutput": 4536
+					"bytesInOutput": 4636
 				},
 				"src/models/MovieModel.ts": {
 					"bytesInOutput": 781
@@ -5136,14 +5173,11 @@
 				"src/models/SeriesModel.ts": {
 					"bytesInOutput": 1498
 				},
-				"src/models/BookModel.ts": {
-					"bytesInOutput": 742
-				},
 				"src/api/apis/OpenLibraryAPI.ts": {
-					"bytesInOutput": 2928
+					"bytesInOutput": 3210
 				},
 				"src/api/apis/SteamAPI.ts": {
-					"bytesInOutput": 1940
+					"bytesInOutput": 2020
 				},
 				"src/models/WikiModel.ts": {
 					"bytesInOutput": 513
@@ -5515,10 +5549,10 @@
 					"bytesInOutput": 1423
 				},
 				"src/modals/MediaDbSearchResultModal.ts": {
-					"bytesInOutput": 1219
+					"bytesInOutput": 2208
 				}
 			},
-			"bytes": 157494
+			"bytes": 163928
 		}
 	}
 }

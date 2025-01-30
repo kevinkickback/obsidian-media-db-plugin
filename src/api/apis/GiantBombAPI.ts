@@ -60,6 +60,7 @@ export class GiantBombAPI extends APIModel {
 					year: new Date(result.original_release_date).getFullYear().toString(),
 					dataSource: this.apiName,
 					id: result.guid,
+					image: result.image?.medium_url ?? result.image?.small_url ?? "",
 				}),
 			);
 		}

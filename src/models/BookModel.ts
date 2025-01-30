@@ -16,6 +16,7 @@ export class BookModel extends MediaTypeModel {
 	genres: string[];
 	publishers: string[];
 	series: string[];
+	editionInfo: string;
 
 	released: boolean;
 
@@ -38,6 +39,7 @@ export class BookModel extends MediaTypeModel {
 		this.genres = [];
 		this.publishers = [];
 		this.series = [];
+		this.editionInfo = "";
 
 		this.released = false;
 

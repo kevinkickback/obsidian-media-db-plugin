@@ -80,6 +80,7 @@ export class OMDbAPI extends APIModel {
 						year: result.Year,
 						dataSource: this.apiName,
 						id: result.imdbID,
+						image: result.Poster ?? "",
 					}),
 				);
 			} else if (type === "series") {
@@ -91,6 +92,7 @@ export class OMDbAPI extends APIModel {
 						year: result.Year,
 						dataSource: this.apiName,
 						id: result.imdbID,
+						image: result.Poster ?? "",
 					}),
 				);
 			} else if (type === "game") {
@@ -102,6 +104,7 @@ export class OMDbAPI extends APIModel {
 						year: result.Year,
 						dataSource: this.apiName,
 						id: result.imdbID,
+						image: result.Poster ?? "",
 					}),
 				);
 			}

@@ -18,6 +18,8 @@ interface OpenLibrarySearchResult {
 	subject?: string[];
 	publisher?: string[];
 	series?: string[];
+	language?: string[];
+	type?: string[];
 }
 
 export class OpenLibraryAPI extends APIModel {
@@ -33,10 +35,27 @@ export class OpenLibraryAPI extends APIModel {
 		this.types = [MediaType.Book];
 	}
 
+	private isSummaryBook(title: string): boolean {
+		const summaryPrefixes = [
+			"summary of",
+			"summary and",
+			"summary &",
+			"analysis of",
+			"study guide",
+			"book analysis",
+			"book summary",
+			"review of",
+			"guide to",
+		];
+
+		const titleLower = title.toLowerCase();
+		return summaryPrefixes.some((prefix) => titleLower.startsWith(prefix));
+	}
+
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
 		console.log(`MDB | api "${this.apiName}" queried by Title`);
 
-		const searchUrl = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher,series`;
+		const searchUrl = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher,series,language,type`;
 
 		const fetchData = await fetch(searchUrl);
 		if (fetchData.status !== 200) {
@@ -48,6 +67,14 @@ export class OpenLibraryAPI extends APIModel {
 		const ret: MediaTypeModel[] = [];
 
 		for (const result of data.docs as OpenLibrarySearchResult[]) {
+			// Skip non-English books and summary books
+			if (
+				(result.language && !result.language.includes("eng")) ||
+				this.isSummaryBook(result.title)
+			) {
+				continue;
+			}
+
 			ret.push(
 				new BookModel({
 					title: result.title,

@@ -72,6 +72,7 @@ export class SteamAPI extends APIModel {
 					year: "",
 					dataSource: this.apiName,
 					id: result.appid,
+					image: `https://cdn.cloudflare.steamstatic.com/steam/apps/${result.appid}/header.jpg`,
 				}),
 			);
 		}

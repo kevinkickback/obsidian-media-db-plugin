@@ -11,6 +11,7 @@ import { MediaType } from "src/utils/MediaType";
 import { APIManager } from "./api/APIManager";
 import { BoardGameGeekAPI } from "./api/apis/BoardGameGeekAPI";
 import { GiantBombAPI } from "./api/apis/GiantBombAPI";
+import { GoogleBooksAPI } from "./api/apis/GoogleBooksAPI";
 import { MALAPI } from "./api/apis/MALAPI";
 import { MALAPIManga } from "./api/apis/MALAPIManga";
 import { MobyGamesAPI } from "./api/apis/MobyGamesAPI";
@@ -74,6 +75,7 @@ export default class MediaDbPlugin extends Plugin {
 		this.apiManager.registerAPI(new BoardGameGeekAPI(this));
 		this.apiManager.registerAPI(new OpenLibraryAPI(this));
 		this.apiManager.registerAPI(new GiantBombAPI(this));
+		this.apiManager.registerAPI(new GoogleBooksAPI(this));
 		// this.apiManager.registerAPI(new LocGovAPI(this)); // TODO: parse data
 
 		this.mediaTypeManager = new MediaTypeManager();
