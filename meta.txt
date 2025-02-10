@@ -75,7 +75,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/BoardGameGeekAPI.ts": {
-			"bytes": 4105,
+			"bytes": 4210,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -163,7 +163,7 @@
 			"format": "esm"
 		},
 		"src/models/BookModel.ts": {
-			"bytes": 1467,
+			"bytes": 1042,
 			"imports": [
 				{
 					"path": "src/utils/MediaType.ts",
@@ -189,7 +189,7 @@
 			"format": "esm"
 		},
 		"src/api/apis/GoogleBooksAPI.ts": {
-			"bytes": 7921,
+			"bytes": 6596,
 			"imports": [
 				{
 					"path": "src/models/BookModel.ts",
@@ -294,42 +294,6 @@
 					"path": "src/models/MangaModel.ts",
 					"kind": "import-statement",
 					"original": "../../models/MangaModel"
-				},
-				{
-					"path": "src/utils/MediaType.ts",
-					"kind": "import-statement",
-					"original": "../../utils/MediaType"
-				},
-				{
-					"path": "src/api/APIModel.ts",
-					"kind": "import-statement",
-					"original": "../APIModel"
-				},
-				{
-					"path": "<runtime>",
-					"kind": "import-statement",
-					"external": true
-				}
-			],
-			"format": "esm"
-		},
-		"src/api/apis/MobyGamesAPI.ts": {
-			"bytes": 1171,
-			"imports": [
-				{
-					"path": "obsidian",
-					"kind": "import-statement",
-					"external": true
-				},
-				{
-					"path": "obsidian",
-					"kind": "import-statement",
-					"external": true
-				},
-				{
-					"path": "src/models/GameModel.ts",
-					"kind": "import-statement",
-					"original": "../../models/GameModel"
 				},
 				{
 					"path": "src/utils/MediaType.ts",
@@ -485,32 +449,6 @@
 					"path": "src/models/SeriesModel.ts",
 					"kind": "import-statement",
 					"original": "../../models/SeriesModel"
-				},
-				{
-					"path": "src/utils/MediaType.ts",
-					"kind": "import-statement",
-					"original": "../../utils/MediaType"
-				},
-				{
-					"path": "src/api/APIModel.ts",
-					"kind": "import-statement",
-					"original": "../APIModel"
-				},
-				{
-					"path": "<runtime>",
-					"kind": "import-statement",
-					"external": true
-				}
-			],
-			"format": "esm"
-		},
-		"src/api/apis/OpenLibraryAPI.ts": {
-			"bytes": 4841,
-			"imports": [
-				{
-					"path": "src/models/BookModel.ts",
-					"kind": "import-statement",
-					"original": "src/models/BookModel"
 				},
 				{
 					"path": "src/utils/MediaType.ts",
@@ -4607,7 +4545,7 @@
 			"format": "esm"
 		},
 		"src/settings/Settings.ts": {
-			"bytes": 25946,
+			"bytes": 25907,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -4805,7 +4743,7 @@
 			"format": "esm"
 		},
 		"src/modals/MediaDbSearchResultModal.ts": {
-			"bytes": 4865,
+			"bytes": 4873,
 			"imports": [
 				{
 					"path": "src/utils/ModalHelper.ts",
@@ -4867,7 +4805,7 @@
 			"format": "esm"
 		},
 		"src/main.ts": {
-			"bytes": 26260,
+			"bytes": 26309,
 			"imports": [
 				{
 					"path": "obsidian",
@@ -4910,11 +4848,6 @@
 					"original": "./api/apis/MALAPIManga"
 				},
 				{
-					"path": "src/api/apis/MobyGamesAPI.ts",
-					"kind": "import-statement",
-					"original": "./api/apis/MobyGamesAPI"
-				},
-				{
 					"path": "src/api/apis/MusicBrainzAPI.ts",
 					"kind": "import-statement",
 					"original": "./api/apis/MusicBrainzAPI"
@@ -4923,11 +4856,6 @@
 					"path": "src/api/apis/OMDbAPI.ts",
 					"kind": "import-statement",
 					"original": "./api/apis/OMDbAPI"
-				},
-				{
-					"path": "src/api/apis/OpenLibraryAPI.ts",
-					"kind": "import-statement",
-					"original": "./api/apis/OpenLibraryAPI"
 				},
 				{
 					"path": "src/api/apis/SteamAPI.ts",
@@ -5095,23 +5023,13 @@
 					"path": "obsidian",
 					"kind": "require-call",
 					"external": true
-				},
-				{
-					"path": "obsidian",
-					"kind": "require-call",
-					"external": true
-				},
-				{
-					"path": "obsidian",
-					"kind": "require-call",
-					"external": true
 				}
 			],
 			"exports": [],
 			"entryPoint": "src/main.ts",
 			"inputs": {
 				"src/main.ts": {
-					"bytesInOutput": 11316
+					"bytesInOutput": 11274
 				},
 				"src/api/APIManager.ts": {
 					"bytesInOutput": 745
@@ -5138,10 +5056,10 @@
 					"bytesInOutput": 676
 				},
 				"src/models/BookModel.ts": {
-					"bytesInOutput": 784
+					"bytesInOutput": 513
 				},
 				"src/api/apis/GoogleBooksAPI.ts": {
-					"bytesInOutput": 3905
+					"bytesInOutput": 2665
 				},
 				"src/models/AnimeModel.ts": {
 					"bytesInOutput": 1095
@@ -5154,9 +5072,6 @@
 				},
 				"src/api/apis/MALAPIManga.ts": {
 					"bytesInOutput": 3383
-				},
-				"src/api/apis/MobyGamesAPI.ts": {
-					"bytesInOutput": 50
 				},
 				"src/api/apis/MusicBrainzAPI.ts": {
 					"bytesInOutput": 2600
@@ -5172,9 +5087,6 @@
 				},
 				"src/models/SeriesModel.ts": {
 					"bytesInOutput": 1498
-				},
-				"src/api/apis/OpenLibraryAPI.ts": {
-					"bytesInOutput": 3210
 				},
 				"src/api/apis/SteamAPI.ts": {
 					"bytesInOutput": 2020
@@ -5198,7 +5110,7 @@
 					"bytesInOutput": 800
 				},
 				"src/settings/Settings.ts": {
-					"bytesInOutput": 14673
+					"bytesInOutput": 14672
 				},
 				"node_modules/esm-env/index.js": {
 					"bytesInOutput": 0
@@ -5222,7 +5134,7 @@
 					"bytesInOutput": 16
 				},
 				"node_modules/svelte/src/constants.js": {
-					"bytesInOutput": 87
+					"bytesInOutput": 86
 				},
 				"node_modules/svelte/src/internal/client/dev/tracing.js": {
 					"bytesInOutput": 337
@@ -5240,7 +5152,7 @@
 					"bytesInOutput": 1036
 				},
 				"node_modules/svelte/src/internal/client/proxy.js": {
-					"bytesInOutput": 2543
+					"bytesInOutput": 2530
 				},
 				"node_modules/svelte/src/internal/client/dev/equality.js": {
 					"bytesInOutput": 686
@@ -5294,7 +5206,7 @@
 					"bytesInOutput": 1442
 				},
 				"node_modules/svelte/src/internal/client/dom/blocks/if.js": {
-					"bytesInOutput": 366
+					"bytesInOutput": 365
 				},
 				"node_modules/svelte/src/internal/client/dom/blocks/each.js": {
 					"bytesInOutput": 3042
@@ -5549,10 +5461,10 @@
 					"bytesInOutput": 1423
 				},
 				"src/modals/MediaDbSearchResultModal.ts": {
-					"bytesInOutput": 2208
+					"bytesInOutput": 2204
 				}
 			},
-			"bytes": 163928
+			"bytes": 159095
 		}
 	}
 }

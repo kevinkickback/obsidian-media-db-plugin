@@ -134,8 +134,9 @@ export class MediaDbSearchResultModal extends SelectModal<MediaTypeModel> {
 		const content = container.createDiv({
 			cls: "media-db-plugin-result-content",
 		});
+
 		content.createEl("div", {
-			text: this.plugin.mediaTypeManager.getFileName(item),
+			text: `${item.title}${item.year ? ` (${item.year})` : ""}`,
 		});
 		content.createEl("small", { text: `${item.getSummary()}\n` });
 		content.createEl("small", {

@@ -4,9 +4,14 @@ import type { MediaTypeModel } from "../../models/MediaTypeModel";
 import { MediaType } from "../../utils/MediaType";
 import { APIModel } from "../APIModel";
 
+interface GoogleBooksIndustryIdentifier {
+	type: string;
+	identifier: string;
+}
+
 interface GoogleBooksImageLinks {
-	thumbnail?: string;
 	smallThumbnail?: string;
+	thumbnail?: string;
 	small?: string;
 	medium?: string;
 	large?: string;
@@ -17,27 +22,22 @@ interface GoogleBooksVolumeInfo {
 	title: string;
 	subtitle?: string;
 	authors?: string[];
+	publisher?: string;
 	publishedDate?: string;
 	description?: string;
-	industryIdentifiers?: Array<{
-		type: string;
-		identifier: string;
-	}>;
+	industryIdentifiers?: GoogleBooksIndustryIdentifier[];
 	pageCount?: number;
 	categories?: string[];
 	averageRating?: number;
 	imageLinks?: GoogleBooksImageLinks;
 	language?: string;
-	publisher?: string;
-	printType?: string;
-	seriesInfo?: {
-		title: string;
-	};
+	canonicalVolumeLink?: string;
 }
 
 interface GoogleBooksSearchResult {
 	id: string;
 	volumeInfo: GoogleBooksVolumeInfo;
+	selfLink: string;
 }
 
 interface GroupedEdition {
@@ -58,7 +58,7 @@ export class GoogleBooksAPI extends APIModel {
 		this.types = [MediaType.Book];
 	}
 
-	private cleanPlot(plot: string): string {
+	private cleanDescription(plot: string): string {
 		if (!plot) return "";
 		// Convert HTML to plain text
 		const tempDiv = document.createElement("div");
@@ -89,30 +89,24 @@ export class GoogleBooksAPI extends APIModel {
 		});
 	}
 
-	private getEditionInfo(info: GoogleBooksSearchResult["volumeInfo"]): string {
-		const parts: string[] = [];
-		if (info.printType) parts.push(info.printType);
-		if (info.language) parts.push(`Language: ${info.language}`);
-		if (info.pageCount) parts.push(`Pages: ${info.pageCount}`);
-		return parts.join(", ");
-	}
-
-	private getFormattedUrl(id: string, title: string): string {
-		return `https://books.google.com/books?id=${id}&title=${encodeURIComponent(title)}`;
-	}
-
 	private getBestImageUrl(
 		imageLinks?: GoogleBooksSearchResult["volumeInfo"]["imageLinks"],
+		forSearch = false,
 	): string | undefined {
 		if (!imageLinks) return undefined;
-		return (
-			imageLinks.extraLarge ||
-			imageLinks.large ||
-			imageLinks.medium ||
-			imageLinks.small ||
-			imageLinks.thumbnail ||
-			imageLinks.smallThumbnail
-		);
+
+		const imageUrl = forSearch
+			? imageLinks.thumbnail
+			: imageLinks.extraLarge ||
+				imageLinks.large ||
+				imageLinks.medium ||
+				imageLinks.small ||
+				imageLinks.thumbnail;
+
+		if (!imageUrl) return undefined;
+
+		// Ensure HTTPS is used
+		return imageUrl.replace(/^http:/, "https:");
 	}
 
 	private groupEditions(results: MediaTypeModel[]): GroupedEdition[] {
@@ -147,10 +141,54 @@ export class GoogleBooksAPI extends APIModel {
 		return Array.from(groups.values());
 	}
 
+	private getISBN(
+		identifiers?: GoogleBooksIndustryIdentifier[],
+	): string | undefined {
+		if (!identifiers) return undefined;
+		const isbn13 = identifiers.find((id) => id.type === "ISBN_13");
+		return isbn13?.identifier;
+	}
+
+	private mapVolumeInfoToBook(
+		info: GoogleBooksVolumeInfo,
+		id?: string,
+	): BookModel {
+		// Get categories from volumeInfo.categories and process them
+		const categories = this.processCategories(info.categories);
+
+		// Get ISBN from volumeInfo.industryIdentifiers
+		const isbn13 = this.getISBN(info.industryIdentifiers);
+
+		// Get best image URL
+		const imageUrl = this.getBestImageUrl(info.imageLinks);
+
+		// Get year from publishedDate
+		const year = info.publishedDate
+			? Number.parseInt(info.publishedDate.substring(0, 4))
+			: undefined;
+
+		return new BookModel({
+			title: info.title,
+			englishTitle: info.title + (info.subtitle ? `: ${info.subtitle}` : ""),
+			author: info.authors?.[0] ?? "unknown",
+			description: this.cleanDescription(info.description ?? ""),
+			pages: info.pageCount ?? 0,
+			image: imageUrl ?? "",
+			onlineRating: info.averageRating ?? 0,
+			isbn13: isbn13 ?? "",
+			genres: categories,
+			publishers: info.publisher ? [info.publisher] : [],
+			year: year?.toString(),
+			dataSource: this.apiName,
+			url: info.canonicalVolumeLink ?? "",
+			id: id ?? "",
+		});
+	}
+
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
 		console.log(`MDB | api "${this.apiName}" queried by Title`);
 
-		const searchUrl = `${this.apiUrl}/volumes?q=${encodeURIComponent(title)}&maxResults=20&langRestrict=en`;
+		const searchUrl = `${this.apiUrl}/volumes?q=${encodeURIComponent(title)}&maxResults=20&langRestrict=en&projection=full`;
 		const fetchData = await fetch(searchUrl);
 
 		if (fetchData.status !== 200) {
@@ -169,49 +207,12 @@ export class GoogleBooksAPI extends APIModel {
 		for (const result of data.items as GoogleBooksSearchResult[]) {
 			const info = result.volumeInfo;
 
-			// Skip non-English books and non-books
-			if (
-				info.language !== "en" ||
-				(info.printType && info.printType !== "BOOK")
-			) {
+			// Skip non-English books
+			if (info.language !== "en") {
 				continue;
 			}
 
-			const isbn =
-				info.industryIdentifiers?.find((id) => id.type === "ISBN_10")
-					?.identifier ?? "";
-			const isbn13 =
-				info.industryIdentifiers?.find((id) => id.type === "ISBN_13")
-					?.identifier ?? "";
-			const year = info.publishedDate ? info.publishedDate.substring(0, 4) : "";
-
-			ret.push(
-				new BookModel({
-					title: info.title + (info.subtitle ? `: ${info.subtitle}` : ""),
-					englishTitle: info.title,
-					year: year,
-					dataSource: this.apiName,
-					id: result.id,
-					url: this.getFormattedUrl(result.id, info.title),
-					author: info.authors?.[0] ?? "unknown",
-					plot: this.cleanPlot(info.description ?? ""),
-					pages: info.pageCount ?? 0,
-					onlineRating: info.averageRating ?? 0,
-					image: this.getBestImageUrl(info.imageLinks) ?? "",
-					isbn: isbn,
-					isbn13: isbn13,
-					genres: this.processCategories(info.categories),
-					publishers: info.publisher ? [info.publisher] : [],
-					series: info.seriesInfo?.title ? [info.seriesInfo.title] : [],
-					released: true,
-					userData: {
-						read: false,
-						lastRead: "",
-						personalRating: 0,
-					},
-					editionInfo: this.getEditionInfo(info),
-				}),
-			);
+			ret.push(this.mapVolumeInfoToBook(info, result.id));
 		}
 
 		// Group editions and flatten back to array
@@ -233,37 +234,7 @@ export class GoogleBooksAPI extends APIModel {
 
 		const result = (await fetchData.json()) as GoogleBooksSearchResult;
 		const info = result.volumeInfo;
-		const isbn =
-			info.industryIdentifiers?.find((id) => id.type === "ISBN_10")
-				?.identifier ?? "";
-		const isbn13 =
-			info.industryIdentifiers?.find((id) => id.type === "ISBN_13")
-				?.identifier ?? "";
-		const year = info.publishedDate ? info.publishedDate.substring(0, 4) : "";
 
-		return new BookModel({
-			title: info.title,
-			englishTitle: info.title,
-			year: year,
-			dataSource: this.apiName,
-			url: this.getFormattedUrl(result.id, info.title),
-			id: result.id,
-			author: info.authors?.[0] ?? "unknown",
-			plot: this.cleanPlot(info.description ?? ""),
-			pages: info.pageCount ?? 0,
-			onlineRating: info.averageRating ?? 0,
-			image: this.getBestImageUrl(info.imageLinks) ?? "",
-			isbn: isbn,
-			isbn13: isbn13,
-			genres: this.processCategories(info.categories),
-			publishers: info.publisher ? [info.publisher] : [],
-			series: info.seriesInfo?.title ? [info.seriesInfo.title] : [],
-			released: true,
-			userData: {
-				read: false,
-				lastRead: "",
-				personalRating: 0,
-			},
-		});
+		return this.mapVolumeInfoToBook(info, result.id);
 	}
 }

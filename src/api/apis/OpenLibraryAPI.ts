@@ -17,9 +17,7 @@ interface OpenLibrarySearchResult {
 	description?: string;
 	subject?: string[];
 	publisher?: string[];
-	series?: string[];
 	language?: string[];
-	type?: string[];
 }
 
 export class OpenLibraryAPI extends APIModel {
@@ -35,27 +33,10 @@ export class OpenLibraryAPI extends APIModel {
 		this.types = [MediaType.Book];
 	}
 
-	private isSummaryBook(title: string): boolean {
-		const summaryPrefixes = [
-			"summary of",
-			"summary and",
-			"summary &",
-			"analysis of",
-			"study guide",
-			"book analysis",
-			"book summary",
-			"review of",
-			"guide to",
-		];
-
-		const titleLower = title.toLowerCase();
-		return summaryPrefixes.some((prefix) => titleLower.startsWith(prefix));
-	}
-
 	async searchByTitle(title: string): Promise<MediaTypeModel[]> {
 		console.log(`MDB | api "${this.apiName}" queried by Title`);
 
-		const searchUrl = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher,series,language,type`;
+		const searchUrl = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher,language`;
 
 		const fetchData = await fetch(searchUrl);
 		if (fetchData.status !== 200) {
@@ -67,11 +48,8 @@ export class OpenLibraryAPI extends APIModel {
 		const ret: MediaTypeModel[] = [];
 
 		for (const result of data.docs as OpenLibrarySearchResult[]) {
-			// Skip non-English books and summary books
-			if (
-				(result.language && !result.language.includes("eng")) ||
-				this.isSummaryBook(result.title)
-			) {
+			// Skip non-English books
+			if (result.language && !result.language.includes("eng")) {
 				continue;
 			}
 
@@ -83,25 +61,17 @@ export class OpenLibraryAPI extends APIModel {
 					dataSource: this.apiName,
 					id: result.key,
 					author: result.author_name?.[0] ?? "unknown",
-					isbn: result.isbn?.find((el) => el.length <= 10) ?? "",
-					isbn13: result.isbn?.find((el) => el.length === 13) ?? "",
+					description: result.description ?? "",
 					pages: result.number_of_pages_median ?? 0,
-					onlineRating: Number.parseFloat(
-						Number(result.ratings_average ?? 0).toFixed(2),
-					),
 					image: result.cover_edition_key
 						? `https://covers.openlibrary.org/b/OLID/${result.cover_edition_key}-L.jpg`
 						: "",
-					plot: result.description ?? "",
+					onlineRating: Number.parseFloat(
+						Number(result.ratings_average ?? 0).toFixed(2),
+					),
+					isbn13: result.isbn?.find((el) => el.length === 13) ?? "",
 					genres: result.subject ?? [],
 					publishers: result.publisher ?? [],
-					series: result.series ?? [],
-					released: true,
-					userData: {
-						read: false,
-						lastRead: "",
-						personalRating: 0,
-					},
 				}),
 			);
 		}
@@ -112,7 +82,7 @@ export class OpenLibraryAPI extends APIModel {
 	async getById(id: string): Promise<MediaTypeModel> {
 		console.log(`MDB | api "${this.apiName}" queried by ID`);
 
-		const searchUrl = `https://openlibrary.org/search.json?q=key:${encodeURIComponent(id)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher,series`;
+		const searchUrl = `https://openlibrary.org/search.json?q=key:${encodeURIComponent(id)}&fields=title,title_english,first_publish_year,key,author_name,isbn,number_of_pages_median,ratings_average,cover_edition_key,description,subject,publisher`;
 		const fetchData = await fetch(searchUrl);
 
 		if (fetchData.status !== 200) {
@@ -136,25 +106,17 @@ export class OpenLibraryAPI extends APIModel {
 			url: `https://openlibrary.org${result.key}`,
 			id: result.key,
 			author: result.author_name?.[0] ?? "unknown",
-			isbn: result.isbn?.find((el) => el.length <= 10) ?? "",
-			isbn13: result.isbn?.find((el) => el.length === 13) ?? "",
+			description: result.description ?? "",
 			pages: result.number_of_pages_median ?? 0,
-			onlineRating: Number.parseFloat(
-				Number(result.ratings_average ?? 0).toFixed(2),
-			),
 			image: result.cover_edition_key
 				? `https://covers.openlibrary.org/b/OLID/${result.cover_edition_key}-L.jpg`
 				: "",
-			plot: result.description ?? "",
+			onlineRating: Number.parseFloat(
+				Number(result.ratings_average ?? 0).toFixed(2),
+			),
+			isbn13: result.isbn?.find((el) => el.length === 13) ?? "",
 			genres: result.subject ?? [],
 			publishers: result.publisher ?? [],
-			series: result.series ?? [],
-			released: true,
-			userData: {
-				read: false,
-				lastRead: "",
-				personalRating: 0,
-			},
 		});
 	}
 }

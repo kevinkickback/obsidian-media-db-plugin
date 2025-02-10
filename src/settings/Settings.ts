@@ -262,11 +262,7 @@ export class MediaDbSettingTab extends PluginSettingTab {
 			.setName("Date format")
 			.setDesc(
 				fragWithHTML(
-					"Your custom date format. Use <em>'YYYY-MM-DD'</em> for example.<br>" +
-						"For more syntax, refer to <a href='https://momentjs.com/docs/#/displaying/format/'>format reference</a>.<br>" +
-						"Your current syntax looks like this: <b><a id='media-db-dateformat-preview' style='pointer-events: none; cursor: default; text-decoration: none;'>" +
-						this.plugin.dateFormatter.getPreview() +
-						"</a></b>",
+					`Your custom date format. Use <em>'YYYY-MM-DD'</em> for example.<br>For more syntax, refer to <a href='https://momentjs.com/docs/#/displaying/format/'>format reference</a>.<br>Your current syntax looks like this: <b><a id='media-db-dateformat-preview' style='pointer-events: none; cursor: default; text-decoration: none;'>${this.plugin.dateFormatter.getPreview()}</a></b>`,
 				),
 			)
 			.addText((cb) => {

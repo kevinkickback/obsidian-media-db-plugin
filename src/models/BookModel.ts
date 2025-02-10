@@ -7,53 +7,27 @@ export type BookData = ModelToData<BookModel>;
 
 export class BookModel extends MediaTypeModel {
 	author: string;
-	plot: string;
+	description: string;
 	pages: number;
 	image: string;
 	onlineRating: number;
-	isbn: string;
 	isbn13: string;
 	genres: string[];
 	publishers: string[];
-	series: string[];
-	editionInfo: string;
-
-	released: boolean;
-
-	userData: {
-		read: boolean;
-		lastRead: string;
-		personalRating: number;
-	};
 
 	constructor(obj: BookData) {
 		super();
 
 		this.author = "";
-		this.plot = "";
+		this.description = "";
 		this.pages = 0;
 		this.image = "";
 		this.onlineRating = 0;
-		this.isbn = "";
 		this.isbn13 = "";
 		this.genres = [];
 		this.publishers = [];
-		this.series = [];
-		this.editionInfo = "";
-
-		this.released = false;
-
-		this.userData = {
-			read: false,
-			lastRead: "",
-			personalRating: 0,
-		};
 
 		migrateObject(this, obj, this);
-
-		if (!Object.prototype.hasOwnProperty.call(obj, "userData")) {
-			migrateObject(this.userData, obj, this.userData);
-		}
 
 		this.type = this.getMediaType();
 	}
@@ -67,6 +41,8 @@ export class BookModel extends MediaTypeModel {
 	}
 
 	getSummary(): string {
-		return `${this.englishTitle} (${this.year}) - ${this.author}`;
+		const parts = [];
+		if (this.author) parts.push(`by ${this.author}`);
+		return parts.join(" - ");
 	}
 }
